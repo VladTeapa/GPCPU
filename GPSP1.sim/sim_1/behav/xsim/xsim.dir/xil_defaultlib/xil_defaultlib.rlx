@@ -1,0 +1,19 @@
+0.7
+2020.2
+Oct 14 2022
+05:20:55
+C:/Academie/ED/GPSP1/GPSP1.sim/sim_1/behav/xsim/glbl.v,1665704903,verilog,,,,glbl,,uvm,,,,,,
+C:/Academie/ED/GPSP1/GPSP1.srcs/sim_1/new/BCDOutputTest.sv,1737128054,systemVerilog,,,,BCDOutputTest,,uvm,,,,,,
+C:/Academie/ED/GPSP1/GPSP1.srcs/sim_1/new/Clock_TB.sv,1737122382,systemVerilog,,C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/new/MemoryInterface.sv,,Clock_TB,,uvm,,,,,,
+C:/Academie/ED/GPSP1/GPSP1.srcs/sim_1/new/MemoryInterfaceTB.sv,1740062711,systemVerilog,,,,MemoryInterfaceTB,,uvm,,,,,,
+C:/Academie/ED/GPSP1/GPSP1.srcs/sim_1/new/OutputController_TB.sv,1737374876,systemVerilog,,,,OutputController_TB,,uvm,,,,,,
+C:/Academie/ED/GPSP1/GPSP1.srcs/sim_1/new/RAM_TB.sv,1737368977,systemVerilog,,,,RAM_TB,,uvm,,,,,,
+C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/imports/new/Counter.sv,1734530637,systemVerilog,,C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/imports/new/DecodificatorBCD.sv,,Counter,,uvm,,,,,,
+C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/imports/new/DecodificatorBCD.sv,1728905043,systemVerilog,,C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/new/Mux81.sv,,DecodificatorBCD,,uvm,,,,,,
+C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/new/BCD.sv,1737374201,systemVerilog,,C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/new/BCDController.sv,,BCD,,uvm,,,,,,
+C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/new/BCDController.sv,1737127545,systemVerilog,,C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/new/BCDControllerInterface.sv,,BCDController,,uvm,,,,,,
+C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/new/BCDControllerInterface.sv,1737122257,systemVerilog,,C:/Academie/ED/GPSP1/GPSP1.srcs/sim_1/new/Clock_TB.sv,,BCDControllerInterface,,uvm,,,,,,
+C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/new/MemoryInterface.sv,1740063164,systemVerilog,,C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/new/RAM.sv,,MemoryInterface,,uvm,,,,,,
+C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/new/Mux81.sv,1737119086,systemVerilog,,C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/new/OutputController.sv,,Mux81,,uvm,,,,,,
+C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/new/OutputController.sv,1737373992,systemVerilog,,C:/Academie/ED/GPSP1/GPSP1.srcs/sim_1/new/OutputController_TB.sv,,OutputController,,uvm,,,,,,
+C:/Academie/ED/GPSP1/GPSP1.srcs/sources_1/new/RAM.sv,1740059387,systemVerilog,,C:/Academie/ED/GPSP1/GPSP1.srcs/sim_1/new/MemoryInterfaceTB.sv,,RAM,,uvm,,,,,,

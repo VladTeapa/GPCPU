@@ -1,0 +1,3 @@
+`define ID_RAM 8'b00000000
+`define ID_ROM 8'b00000001
+`define ID_NULL 8'b11111111

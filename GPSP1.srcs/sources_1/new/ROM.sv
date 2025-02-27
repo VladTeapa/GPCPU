@@ -30,10 +30,10 @@ module ROM #(parameter logic[7:0] Memory [255:0] = '{default: 8'b00000000})(
         output wire [7:0] Data
     );
 
-    logic [7:0] Ram_Data [255:0];
+    logic [7:0] Rom_Data [255:0];
     logic [7:0] Temp_Data = 8'bzzzzzzzz;
 
-    assign Ram_Data = Memory;
+    assign Rom_Data = Memory;
 
     assign Data = (Activate == 1) ? Temp_Data : 8'bzzzzzzzz;
 
@@ -42,7 +42,7 @@ module ROM #(parameter logic[7:0] Memory [255:0] = '{default: 8'b00000000})(
             Temp_Data <= 8'bzzzzzzzz;
         end else begin
             if(Activate == 1) begin
-                Temp_Data<=Ram_Data[Address];
+                Temp_Data<=Rom_Data[Address];
             end else begin
                 Temp_Data <= 8'bzzzzzzzz;
             end

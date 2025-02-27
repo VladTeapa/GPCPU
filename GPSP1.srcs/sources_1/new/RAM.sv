@@ -30,8 +30,9 @@ module RAM (
     );
 
     logic [7:0] Ram_Data [255:0] ='{default: 8'b00000000};
+    logic [7:0] Temp_Data;
     
-    assign Data = (Activate == 1 && RW == 0) ? Ram_Data[Address] : 8'bzzzzzzzz;
+    assign Data = (Activate == 1 && RW == 0) ? Temp_Data : 8'bzzzzzzzz;
 
     always_ff @(posedge Clk) begin
         if(Reset == 1) begin
@@ -40,6 +41,8 @@ module RAM (
             if(Activate == 1) begin
                 if(RW == 1) begin
                     Ram_Data[Address]<=Data;
+                end else begin
+                    Temp_Data<=Ram_Data[Address];  
                 end
             end
         end

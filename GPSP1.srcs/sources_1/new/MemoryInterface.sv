@@ -22,22 +22,20 @@
 
 module MemoryInterface #(parameter RAM=0, Nr=1)( //RAM == 1 is RAM, else is ROM, ROM must be manually added
     input Clk,
-    inout wire [7:0] Data,
+    inout wire [7:0] Data, 
     input Activate,
     input Reset,
     input RW
     );
 
-    logic [7:0] TempData = 0;
     logic [7:0] TempId = 0;
-    logic [1:0] State = 0; // 0 Initial Read 8 Bit MemID, 1 Read 8 Bit Address, 2 Read 8 Bit Data, 3 Reset State (Used so that one cycle it remains active)
+    logic [2:0] State = 0; // 0 Initial Read 8 Bit MemID, 1 Read 8 Bit Address, 2 Read 8 Bit Data, 3 Reset State (Used so that one cycle it remains active)
     logic [255:0] ActivateMultiple;
     logic [7:0] TempAddress;
     
-    assign ActivateMultiple = (Activate == 1 && State == 3) ? (1<<TempId) : 0;        //Which stick to activate, max 256
+assign ActivateMultiple = (Activate == 1 && (State >= 3 || (State>=2 && RW == 1))) ? (1<<TempId) : 0;        //Which stick to activate, max 256
 
     always_ff @(posedge Clk) begin
-           $display("Clk edge at %t: Data=%b State=%d Activate=%b", $time, Data, State, Activate);
         if(Reset == 1) begin
             State <= 0;
         end else begin
@@ -58,10 +56,15 @@ module MemoryInterface #(parameter RAM=0, Nr=1)( //RAM == 1 is RAM, else is ROM,
                 end
                 3:
                 begin
+                    State <= 4; 
+                end
+                4:
+                begin
+                    State <= 5; 
+                end
+                5:
+                begin
                     State <= 0;
-                    if(Activate == 1) begin //Begin reading data
-                        State <= 1;
-                    end    
                 end
             endcase
         end
@@ -91,10 +94,9 @@ module MemoryInterface #(parameter RAM=0, Nr=1)( //RAM == 1 is RAM, else is ROM,
     generate
         if(RAM==0)
         begin
-            ROM #(.Memory(ROM_STICK0)) rom_stick_0(
+            ROM #(.Memory(ROM_STICK_0)) rom_stick_0(
                 .Clk(Clk),
-                .Activate(ActivateMultiple[i]),
-                .RW(RW), // RW = 0 R, 1 W
+                .Activate(ActivateMultiple[0]),
                 .Reset(Reset),
                 .Address(TempAddress),
                 .Data(Data)

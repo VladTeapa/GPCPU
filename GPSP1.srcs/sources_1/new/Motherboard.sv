@@ -21,13 +21,13 @@
 `include "IdMapping.vh"
 
 module Motherboard(
-    input Clk
+    input Clk,
+    input wire Reset,
+    output RW
     );
 
     wire [7:0] Data;
     wire [7:0] Id;
-    wire RW;
-    wire Reset;
     wire [255:0] ActivateLines;
 
     CPU cpu(
@@ -51,7 +51,7 @@ module Motherboard(
         .Reset(Reset)
     );
 
-    MemoryInterface #(.RAM(0), .Nr(3)) romMemoryInterface (
+    MemoryInterface #(.RAM(0), .Nr(1)) romMemoryInterface (
         .Clk(Clk),
         .Data(Data),
         .Activate(ActivateLines[`ID_ROM]),

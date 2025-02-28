@@ -131,6 +131,12 @@ module CPU(
         Add_MicroInstruction(index, data, `ID_NULL, 3'b000, 0, 1,0);
     endtask
 
+    task Output_Data(input logic [3:0] index,
+                     input logic [7:0] id,
+                     input logic [7:0] data);
+        Add_MicroInstruction(index, data, id, )
+    endtask
+
     always_ff @(posedge Clk) begin
         if(Reset == 1) begin
             PC <= 0;
@@ -374,7 +380,7 @@ module CPU(
                                                    SP,
                                                    PC[15:8],
                                                    `ID_RAM);
-                                    Write_Variable(6,
+                                    Write_Variable(7,
                                                    SP+1,
                                                    PC[7:0],
                                                    `ID_RAM);
@@ -386,11 +392,11 @@ module CPU(
                                 3'b101: //RET
                                 begin
                                     Read_Variable(0,
-                                                  SP,
+                                                  SP-1,
                                                   3'b110,
                                                   `ID_RAM);
-                                    Read_Variable(6,
-                                                  SP-1,
+                                    Read_Variable(7,
+                                                  SP-2,
                                                   3'b111,
                                                   `ID_RAM);
                                     TempInstructionPC<=13;
@@ -409,7 +415,7 @@ module CPU(
                             begin
                                 TempInstructionPC<=6;
                                 Read_Variable(0,
-                                              SP,
+                                              SP-1,
                                               {1'b0, Instruction[17:16]},
                                               `ID_RAM);
                                 SP<=SP-1;
@@ -480,10 +486,20 @@ module CPU(
                                     InstructionByte<=InstructionByte+1;
                                     Instruction[23:16]<=Data;
                                     case(Data[7:3])
-                                        5'b01000, 5'b01001, 5'b01010, 5'b01101, 5'b01110, 5'b00000:
+                                        5'b01000, 5'b01001, 5'b01010, 5'b01101, 5'b01110, 5'b00011:
                                         begin
-                                            Read_Instruction(0, PC+1, `ID_RAM);
-                                            TempInstructionPC<=6;
+                                            if(Data==8'b01110101)
+                                            begin
+                                                State<=EXEC_INSTRUCT;
+                                                InstructionReady<=1;
+                                                RW<=0;
+                                                Id<=`ID_NULL;
+                                            end
+                                            else
+                                            begin
+                                                Read_Instruction(0, PC+1, `ID_RAM);
+                                                TempInstructionPC<=6;
+                                            end
                                         end
                                         5'b00011:
                                         begin

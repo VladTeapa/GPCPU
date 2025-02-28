@@ -37,7 +37,7 @@ module Motherboard_TB(
 
     initial
     begin
-        #2000;
+        #3000;
         $finish;
     end
 

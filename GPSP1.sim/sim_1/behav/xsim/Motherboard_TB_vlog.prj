@@ -1,10 +1,17 @@
 # compile verilog/system verilog design source files
 sv xil_defaultlib  --include "../../../../GPSP1.srcs/sources_1/new" \
+"../../../../GPSP1.srcs/sources_1/new/BCD.sv" \
+"../../../../GPSP1.srcs/sources_1/new/BCDController.sv" \
+"../../../../GPSP1.srcs/sources_1/new/BCDControllerInterface.sv" \
 "../../../../GPSP1.srcs/sources_1/new/CPU.sv" \
 "../../../../GPSP1.srcs/sources_1/new/Chipset.sv" \
 "../../../../GPSP1.srcs/sim_1/new/Clock_TB.sv" \
+"../../../../GPSP1.srcs/sources_1/imports/new/Counter.sv" \
+"../../../../GPSP1.srcs/sources_1/imports/new/DecodificatorBCD.sv" \
 "../../../../GPSP1.srcs/sources_1/new/MemoryInterface.sv" \
 "../../../../GPSP1.srcs/sources_1/new/Motherboard.sv" \
+"../../../../GPSP1.srcs/sources_1/new/Mux81.sv" \
+"../../../../GPSP1.srcs/sources_1/new/OutputController.sv" \
 "../../../../GPSP1.srcs/sources_1/new/RAM.sv" \
 "../../../../GPSP1.srcs/sources_1/new/ROM.sv" \
 "../../../../GPSP1.srcs/sim_1/new/Motherboard_TB.sv" \

@@ -1,5 +1,5 @@
 _START:                         //ADDRESS  0x0000
-MOV R0, i;      //0x42000024    //ADDRESS  0x0000
+MOV R0, i;      //0x42000030    //ADDRESS  0x0000
 MOV R1, 2;      //0x414002      //ADDRESS  0x0004
 ADD R0, R1;     //0x4810        //ADDRESS  0x0007
 INC R0;         //0x58          //ADDRESS  0x0009
@@ -18,14 +18,18 @@ PUSH R0;        //0x10          //ADDRESS  0x001D
 PUSH R3;        //0x13          //ADDRESS  0x001E
 PUSH R2;        //0x12          //ADDRESS  0x001F
 MOV R3, 2;      //0x41C002      //ADDRESS  0x0020
-RET;            //0x75          //ADDRESS  0x0023
-///DATA                         //ADDRESS  0x0024
-i byte          //0x08          //ADDRESS  0x0024
-j byte          //0x05          //ADDRESS  0x0025
-///STACK                        //ADDRESS  0x0026
+MOV R1, 6;      //0x414006      //ADDRESS  0x0023 
+MOV RP0,R1      //0x4760        //ADDRESS  0x0026
+MOV R1, 9;      //0x414009      //ADDRESS  0x0028 
+MOV RP1,R1      //0x4740        //ADDRESS  0x002b
+OUTPUTL 254, RP;//0x1CFE        //ADDRESS  0x002d
+RET;            //0x75          //ADDRESS  0x002f
+///DATA                         //ADDRESS  0x0030
+i byte          //0x08          //ADDRESS  0x0030
+j byte          //0x05          //ADDRESS  0x0031
+///STACK                        //ADDRESS  0x0031
 
 
 
 //RESULT:
 
-0x0025420000244140024810581044000001161074001770000016171441000A10131241C002750805

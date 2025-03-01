@@ -57,7 +57,7 @@ module OutputController_TB(
         Reset = 0;
         #11;
         Load = 1;
-        Data={4'b000,1'b1,3'b010};
+        Data={4'b0000,1'b1,3'b010};
         #2;
         Data=3;
         Load = 0;

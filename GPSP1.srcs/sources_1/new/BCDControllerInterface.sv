@@ -25,14 +25,13 @@ module BCDControllerInterface(
     inout [7:0] Data,
     input Reset,
     input Load,
-    output Finished,
-    output [3:0] Numbers [7:0],
-    output [7:0] AnodesEnabled
+    output reg Finished,
+    output reg [3:0] Numbers [7:0],
+    output reg [7:0] AnodesEnabled
     );
 
     logic LoadState = 0;
     logic [7:0] TempData = 0;
-    logic [7:0] AnodesEnabled = 8'b11111111;
 
     always_ff @(posedge Clk) begin
         Finished <= 0;

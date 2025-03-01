@@ -18,7 +18,7 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-
+`include "IdMapping.vh"
 
 module OutputController(
         input Clk,
@@ -44,10 +44,10 @@ module OutputController(
 
     BCD #(1) BCD_Ouput(       
         .Clk(Clk),
-        .Load(Load_Internal[0]),
-        .Reset(Reset_Internal[0]),
+        .Load(Load_Internal[`ID_BCD]),
+        .Reset(Reset_Internal[`ID_BCD]),
         .Data(Data),
-        .Finished(Finished_Internal[0]),
+        .Finished(Finished_Internal[`ID_BCD]),
         .Segments(Segments),
         .Anodes(Anodes)
     );

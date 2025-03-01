@@ -23,6 +23,8 @@
 module Motherboard(
     input Clk,
     input wire Reset,
+    output [7:0] Segments,
+    output [7:0] Anodes,
     output RW
     );
 
@@ -57,6 +59,16 @@ module Motherboard(
         .Activate(ActivateLines[`ID_ROM]),
         .RW(RW),
         .Reset(Reset)
+    );
+
+    OutputController outputController(
+        .Clk(Clk),
+        .Id(Id),
+        .Load(1),
+        .Data(Data),
+        .Reset(Reset),
+        .Segments(Segments),
+        .Anodes(Anodes)
     );
 
 endmodule

@@ -26,11 +26,9 @@
 `define DEC 5'b01100
 `define CMP 5'b01101
 `define JMP 5'b01110
-`define LOAD 5'b00000
 `define SAVE 5'b00001
 `define STACKOP 5'b00010
-`define OUTPUTID 5'b00011
-`define OUTPUT 5'b00100
+`define OUTPUT 5'b00011
 
 module CPU(
         input Clk,
@@ -53,6 +51,7 @@ module CPU(
 
     logic CMPA, CMPB, CMPE;
     logic Carry = 0;
+    logic Zero = 0;
 
     logic [2:0] NrOfCyclesRemaining = 0;
 
@@ -72,7 +71,6 @@ module CPU(
     logic [15:0] BootstrappingIndex = 0;
     logic DoneBootstrapping = 0;
     logic WriteBootstrapping = 0;
-    logic InstructionReady = 0;
 
     assign Data = (RW == 1) ? TempData : 8'bzzzzzzzz; 
 
@@ -134,13 +132,14 @@ module CPU(
     task Output_Data(input logic [3:0] index,
                      input logic [7:0] id,
                      input logic [7:0] data);
-        Add_MicroInstruction(index, data, id, )
+        Add_MicroInstruction(index, data, id, 0, 0, 1, 0);
     endtask
 
     always_ff @(posedge Clk) begin
         if(Reset == 1) begin
             PC <= 0;
             Carry <= 0;
+            Zero <= 0;
             CMPA <= 0;
             CMPB <= 0;
             CMPE <= 0;
@@ -304,11 +303,11 @@ module CPU(
                                 begin
                                     if(Instruction[23:19] == `ADD) //RP,C
                                     begin
-                                        {Carry,RP[1],RP[0]} <= {RP[1], RP[0]} + Instruction[7:0];
+                                        {Carry,RP[1],RP[0]} <= {RP[1], RP[0]} + Instruction[15:8];
                                     end
                                     else
                                     begin
-                                        {Carry,RP[1],RP[0]} <= {RP[1], RP[0]} - Instruction[7:0];
+                                        {Carry,RP[1],RP[0]} <= {RP[1], RP[0]} - Instruction[15:8];
                                     end
                                 end
                                 default:
@@ -349,25 +348,25 @@ module CPU(
                         `JMP: //TBA
                         begin
                             case(Instruction[18:16])
-                                3'b000:
+                                3'b000: //JMP
                                 begin
                                     PC<=Instruction[15:0];
                                 end
-                                3'b001:
+                                3'b001: //JMPA
                                 begin
                                     if(CMPA == 1)
                                     begin
                                         PC<=Instruction[15:0];
                                     end
                                 end
-                                3'b010:
+                                3'b010: //JMPE
                                 begin
                                     if(CMPE == 1)
                                     begin
                                         PC<=Instruction[15:0];
                                     end
                                 end
-                                3'b011:
+                                3'b011: //JMPB
                                 begin
                                     if(CMPB == 1)
                                     begin
@@ -403,10 +402,21 @@ module CPU(
                                     SP<=SP-2;
                                     State<=EXEC_MICRO_INSTRUCT;
                                 end
+                                3'b110: //JMPC
+                                begin
+                                    if(Carry == 1)
+                                    begin
+                                        PC<=Instruction[15:0];
+                                    end
+                                end
+                                3'b111: //JMPZ
+                                begin
+                                    if(Zero == 1)
+                                    begin
+                                        PC<=Instruction[15:0];
+                                    end
+                                end
                             endcase
-                        end
-                        `LOAD:
-                        begin
                         end
                         `STACKOP:
                         begin
@@ -430,17 +440,50 @@ module CPU(
                                 SP<=SP+1;
                             end
                         end
-                        `OUTPUTID: //TBA
-                        begin
-                            if(Instruction[18]==0)
-                            begin
-                            end
-                            else
-                            begin
-                            end
-                        end
                         `OUTPUT:
                         begin
+                            State<=EXEC_MICRO_INSTRUCT;
+                            if(Instruction[18]==0) //OUTPUT
+                            begin
+                                case(Instruction[17:16])
+                                    2'b00:
+                                    begin
+                                    end
+                                    2'b01:
+                                    begin
+                                    end
+                                    2'b10:
+                                    begin
+                                    end
+                                    2'b11:
+                                    begin
+                                    end
+                                endcase
+                            end
+                            else //OUTPUTL
+                            begin
+                                TempInstructionPC<=2;
+                                case(Instruction[17:16])
+                                    2'b00:
+                                    begin
+                                        Output_Data(2, Instruction[15:8], RP[0]);
+                                        Output_Data(1, Instruction[15:8], RP[1]);
+                                        Output_Data(0, Instruction[15:8], RP[1]);
+                                    end
+                                    2'b01:
+                                    begin
+                                        Output_Data(2, R[Instruction[15:14]], RP[0]);
+                                        Output_Data(1, R[Instruction[15:14]], RP[1]);
+                                        Output_Data(0, R[Instruction[15:14]], RP[1]);
+                                    end
+                                    2'b10:
+                                    begin
+                                        Output_Data(2, Instruction[15:8], Instruction[7:0]);
+                                        Output_Data(1, Instruction[15:8], InstructionExtra);
+                                        Output_Data(0, Instruction[15:8], InstructionExtra);
+                                    end
+                                endcase
+                            end
                         end
                         default:
                         begin
@@ -525,7 +568,7 @@ module CPU(
                                     case(Instruction[23:16])
                                         8'b01000001, 8'b01000010, 8'b01000100, 8'b01000101, 8'b01000110, 8'b01001001,
                                         8'b01010001, 8'b01110000, 8'b01110001, 8'b01110010, 8'b01110011, 8'b01110100, 
-                                        8'b00000001:
+                                        8'b00000001, 8'b00011000, 8'b00011010, 8'b00011011, 8'b00011110:
                                         begin
                                             Read_Instruction(0, PC+1, `ID_RAM);
                                             TempInstructionPC<=6;
@@ -544,7 +587,7 @@ module CPU(
                                     InstructionByte<=InstructionByte+1;
                                     Instruction[7:0]<=Data;
                                     case (Instruction[23:16])
-                                        8'b01000110, 8'b01000101, 8'b01000010, 8'b01000100:
+                                        8'b01000110, 8'b01000101, 8'b01000010, 8'b01000100, 8'b00011110:
                                         begin
                                             Read_Instruction(0, PC+1, `ID_RAM);
                                             TempInstructionPC<=6;

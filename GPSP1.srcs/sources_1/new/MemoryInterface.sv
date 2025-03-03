@@ -33,7 +33,7 @@ module MemoryInterface #(parameter RAM=0, Nr=1)( //RAM == 1 is RAM, else is ROM,
     logic [255:0] ActivateMultiple;
     logic [7:0] TempAddress;
     
-assign ActivateMultiple = (Activate == 1 && (State >= 3 || (State>=2 && RW == 1))) ? (1<<TempId) : 0;        //Which stick to activate, max 256
+    assign ActivateMultiple = (Activate == 1 && (State >= 2 || (State>=2 && RW == 1))) ? (1<<TempId) : 0;        //Which stick to activate, max 256
 
     always_ff @(posedge Clk) begin
         if(Reset == 1) begin
@@ -43,12 +43,14 @@ assign ActivateMultiple = (Activate == 1 && (State >= 3 || (State>=2 && RW == 1)
                 0:
                 begin
                     if(Activate == 1) begin //Begin reading data
+                        TempId <= Data;   
                         State <= 1;
                     end                     //Should be 0 if there is only 1 present
                 end
                 1:
                 begin
                     State <= 2;             //Read the addres for stick x
+                    TempAddress <= Data;
                 end
                 2:
                 begin
@@ -69,12 +71,12 @@ assign ActivateMultiple = (Activate == 1 && (State >= 3 || (State>=2 && RW == 1)
             endcase
         end
     end
-    always @(State) begin
-        if(State == 1)
-            TempId <= Data;   
-        if(State == 2)
-            TempAddress <= Data;
-    end
+    // always @(State) begin
+    //     if(State == 1)
+    //         TempId <= Data;   
+    //     if(State == 2)
+    //         TempAddress <= Data;
+    // end
     genvar i; //Variabila necesara pentru a genera automat
     generate
         for (i = 0;i<Nr && RAM==1;i++)

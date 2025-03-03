@@ -25,8 +25,8 @@ MOV RP1,R1      //0x4740        //ADDRESS  0x002b
 OUTPUTL 254, RP;//0x1CFE        //ADDRESS  0x002d
 RET;            //0x75          //ADDRESS  0x002f
 ///DATA                         //ADDRESS  0x0030
-i byte          //0x08          //ADDRESS  0x0030
-j byte          //0x05          //ADDRESS  0x0031
+i byte;         //0x08          //ADDRESS  0x0030
+j byte;         //0x05          //ADDRESS  0x0031
 ///STACK                        //ADDRESS  0x0031
 
 

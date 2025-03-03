@@ -19,7 +19,6 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module BCD #(parameter CLK_NS_SWITCH = 3000000)(
         input Clk,
         input Load,
@@ -27,18 +26,21 @@ module BCD #(parameter CLK_NS_SWITCH = 3000000)(
         input [7:0] Data,
         output Finished,
         output [7:0] Segments,
-        output [7:0] Anodes
+        output [7:0] Anodes,
+    output [7:0] DEBUGNR
+
     );
 
-    logic [3:0] Numbers[7:0] = '{default:8'h00};
-    logic [7:0] AllowedAnodes = 8'h00;
+    wire [3:0] Numbers[7:0];
+    wire [7:0] AllowedAnodes;
 
     BCDController #(CLK_NS_SWITCH) bcdControllerDisplay(
         .Clk(Clk),
         .Numbers(Numbers),
         .AllowedAnodes(AllowedAnodes),
         .Anodes(Anodes),
-        .Segments(Segments)
+        .Segments(Segments),
+        .DEBUGNR(DEBUGNR)
     );
 
     BCDControllerInterface bcdMemoryInterface(

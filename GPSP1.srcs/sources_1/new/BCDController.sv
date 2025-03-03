@@ -19,18 +19,18 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module BCDController #(parameter CLK_NS_SWITCH = 3000000) (
     input Clk,
     input [3:0] Numbers [7:0],
     input [7:0] AllowedAnodes,
     output [7:0] Anodes,
-    output [7:0] Segments
+    output [7:0] Segments,
+    output [7:0] DEBUGNR
     );
 
     logic [2:0] SelBCD;
     logic [3:0] CurrentNumber;
-    logic [3:0] SelBCDTemp = 0;
+    logic [3:0] SelBCDTemp;
     logic [7:0] AnodesTemp;
 
     DecodificatorBCD BCD_Convert(
@@ -74,4 +74,5 @@ module BCDController #(parameter CLK_NS_SWITCH = 3000000) (
     
     assign SelBCD = {1'b0,SelBCDTemp};
     assign Anodes = AnodesTemp | (~AllowedAnodes);
+    assign DEBUGNR = {CurrentNumber ,2'b00, SelBCDTemp};
 endmodule

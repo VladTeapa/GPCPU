@@ -19,43 +19,51 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module BCDControllerInterface(
     input Clk,
     inout [7:0] Data,
     input Reset,
     input Load,
-    output reg Finished,
-    output reg [3:0] Numbers [7:0],
-    output reg [7:0] AnodesEnabled
+    output Finished,
+    output [3:0] Numbers [7:0],
+    output [7:0] AnodesEnabled
     );
 
     logic LoadState = 0;
+    logic FinishedTemp = 0;
+
     logic [7:0] TempData = 0;
+    logic [3:0] NumbersTemp [7:0] = '{default:8'h00};
+    logic [7:0] AnodesEnabledTemp = 8'h00;
+
+
+    assign Numbers = NumbersTemp;
+    assign AnodesEnabled = AnodesEnabledTemp;
+    assign Finish = FinishedTemp;
 
     always_ff @(posedge Clk) begin
-        Finished <= 0;
+        FinishedTemp <= 0;
         case (LoadState)
             0:
             begin
                 if(Reset == 1) begin
-                    Numbers <= '{default: 4'b0000};
+                    NumbersTemp <= '{default: 4'b0000};
                     TempData <= 0;
-                    AnodesEnabled <= 0;
-                    Finished<=1;
+                    AnodesEnabledTemp <= 0;
+                    FinishedTemp<=1;
                 end if(Load == 1) begin
                     LoadState <= 1;
-                    AnodesEnabled[Data[2:0]] <= Data[3];
+                    AnodesEnabledTemp[Data[2:0]] <= Data[3];
                     TempData <= Data[2:0];
                 end
             end
             1:
             begin
-                Finished <= 1;
+                FinishedTemp <= 1;
                 LoadState <= 0;
                 if(TempData <= 7)
                 begin
-                    Numbers[TempData] <= Data;
+                    NumbersTemp[TempData] <= Data;
                 end
             end
         endcase

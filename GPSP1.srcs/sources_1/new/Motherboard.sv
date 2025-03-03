@@ -25,7 +25,8 @@ module Motherboard(
     input wire Reset,
     output [7:0] Segments,
     output [7:0] Anodes,
-    output RW
+    output RW,
+    output [7:0] DEBUGNR
     );
 
     wire [7:0] Data;
@@ -68,7 +69,9 @@ module Motherboard(
         .Data(Data),
         .Reset(Reset),
         .Segments(Segments),
-        .Anodes(Anodes)
+        .Anodes(Anodes),
+        .DEBUGNR(DEBUGNR),
+        .Finish()
     );
 
 endmodule

@@ -28,7 +28,9 @@ module OutputController(
         input Load,
         output reg Finish,
         output [7:0] Segments,
-        output [7:0] Anodes
+        output [7:0] Anodes,
+    output [7:0] DEBUGNR
+
     );
 
     logic [3:0] Numbers [7:0];
@@ -42,14 +44,15 @@ module OutputController(
     assign Reset_Internal = 0 | ((Reset == 1) ? (1<<Id) : 256'b0);
     assign Finish = Finished_Internal[Id];
 
-    BCD #(1) BCD_Ouput(       
+    BCD #(300000) BCD_Ouput(       
         .Clk(Clk),
         .Load(Load_Internal[`ID_BCD]),
         .Reset(Reset_Internal[`ID_BCD]),
         .Data(Data),
         .Finished(Finished_Internal[`ID_BCD]),
         .Segments(Segments),
-        .Anodes(Anodes)
+        .Anodes(Anodes),
+        .DEBUGNR(DEBUGNR)
     );
 
 endmodule

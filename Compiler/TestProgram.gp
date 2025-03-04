@@ -1,30 +1,24 @@
 ///CODE
 _START:         
-MOV R0 i     
-MOV R1 2     
-ADD R0 R1     
-INC R0         
-PUSH R0        
-MOV R0 [0x1]  
-POP R2         
-PUSH R0        
-CALL TESTFCT   
-JMP START      
-_TESTFCT:       
-POP R2         
-POP R3         
-POP R0         
-MOV R0 10     
-PUSH R0        
-PUSH R3        
-PUSH R2        
-MOV R3 2      
-MOV R1 6       
-MOV RP0 R1      
-MOV R1 9       
-MOV RP1 R1      
+MOV RP [j]
+MOV R3 8
+_LOOP_1:
+MOV R0 [RP]
+INC RP
+MOV R1 RP0
+MOV R2 RP1
+MOV RP1 R0
+MOV R0 R3
+ADD R0 8
+DEC R0
+MOV RP0 R0
 OUTPUTL 254 RP
-RET            
+MOV RP0 R1
+MOV RP1 R2
+DEC R3
+JMPZ DONE   
+JMP LOOP_1
+_DONE:
+JMP DONE   
 ///DATA         
-i byte 5      
-j bytearray 10 {0 1 2 3 4 5 6 7 8 9}
+j bytearray 8 {0 1 2 3 4 5 6 7}

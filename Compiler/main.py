@@ -30,6 +30,7 @@ for i in range(var_code_index+1, var_data_index):
         continue
     tokens = lines[i].split(' ')
     tokens = [t.lower() for t in tokens]
+    print(format(address,"04x") + ':' +' '.join(tokens))
     if(tokens[0] == 'mov'):
         if(tokens[1][0] == 'r' and tokens[1][1] != 'p'): #MOV RX, X
             if(tokens[2][0] == 'r' and tokens[2][1] != 'p'): #MOV RX, RY 
@@ -41,9 +42,13 @@ for i in range(var_code_index+1, var_data_index):
                 code.append(format((int(tokens[1][1])*64), "02x"))
                 code.append(format(int(tokens[2]),"02x"))
                 address = address + 3
-            elif(tokens[2] == 'rp'): #MOV RX, RP
+            elif(tokens[2] == 'rp0' or tokens[2] == 'rp1'): #MOV RX, RP
                 code.append('43')
-                code.append(format((int(tokens[1][1])*64+int(tokens[2][2])*16), "02x"))
+                code.append(format((int(tokens[1][1])*64+int(tokens[2][2])*32), "02x"))
+                address = address + 2
+            elif(tokens[2] == '[rp]'):
+                code.append('45')
+                code.append(format(int(tokens[1][1]),"02x"))
                 address = address + 2
             elif(tokens[2][0]=='[' and tokens[2][-1]==']'): #MOV RX, [C]
                 code.append('42')
@@ -56,6 +61,11 @@ for i in range(var_code_index+1, var_data_index):
                 code.append(format(0, "04x"))
                 vars.append((tokens[2],address+2))
                 address = address + 4
+        elif(tokens[1] == 'rp' and tokens[2][0] == '[' and tokens[2][-1] == ']'):
+            vars.append((tokens[2][1:-1],address+1))
+            code.append('46')
+            code.append('0000')
+            address = address + 3
         elif(tokens[1][0]=='[' and tokens[1][-1]==']'): #MOV [X], RX
             if(tokens[1] == '[rp0]' or tokens[1] == '[rp1]'): #MOV [RP], RX
                 code.append('45')
@@ -69,7 +79,7 @@ for i in range(var_code_index+1, var_data_index):
                 address = address + 4
         elif((tokens[1] == 'rp0' or tokens[1] == 'rp1') and tokens[2][0]=='r' and tokens[2][1].isnumeric()): #MOV RPX, RY
             code.append('43')
-            code.append(format((int(tokens[2][1])*64+int(tokens[1][2])*16) + 16, "02x"))
+            code.append(format((int(tokens[2][1])*64+int(tokens[1][2])*32) + 16, "02x"))
             address = address + 2
         elif(tokens[1] == 'rp' and tokens[2] == 'sp'): #MOV RP SP
             code.append('44')
@@ -119,7 +129,7 @@ for i in range(var_code_index+1, var_data_index):
                     code.append('51')
                 code.append(format((int(tokens[1][1])*64),"02x"))
                 code.append(format(int(tokens[2]),"02x"))
-                address = address + 2
+                address = address + 3
             else:
                 print('ERROR at line: ' + str(index) + ' data: ' + ' '.join(tokens))
                 exit(0)
@@ -259,7 +269,7 @@ for _ in labels_to_modify:
     for l in labels:
         if(l[0].lower() == _[0].lower()):
             addr = l[1]
-            code[_[1]] = format(addr, "04x")[0] + format(addr, "04x")[1]
+            code[_[1]] = format(addr, "04x")[1] + format(addr, "04x")[1]
             code[_[1]+1] = format(addr, "04x")[2] + format(addr, "04x")[3]
             break
 

@@ -272,6 +272,10 @@ module CPU(
                                     TempInstructionPC<=6;
                                     State<=EXEC_MICRO_INSTRUCT;
                                 end
+                                6:
+                                begin
+                                    {RP[1], RP[0]} <= Instruction[15:0];
+                                end
                             endcase
                         end
                         `ADD, `SUB: //DONE
@@ -360,10 +364,18 @@ module CPU(
                             if(Instruction[16]==0)
                             begin
                                 {Carry, R[Instruction[18:17]]} <= R[Instruction[18:17]] - 1;
+                                if(R[Instruction[18:17]] == 8'b00000001)
+                                    Zero<=1;
+                                else
+                                    Zero<=0;
                             end
                             else
                             begin
                                 {Carry, RP[1], RP[0]} <= {RP[1], RP[0]} - 1;
+                                if(RP[1] == 8'h00 && RP[0] == 8'h01)
+                                    Zero<=1;
+                                else
+                                    Zero<=0;
                             end
                         end
                         `CMP: //DONE
@@ -606,10 +618,10 @@ module CPU(
                                     InstructionByte<=InstructionByte+1;
                                     Instruction[15:8]<=Data;
                                     case(Instruction[23:16])
-                                        8'b01000001, 8'b01000010, 
+                                        8'b01000001, 8'b01000010, 8'b01000110, 
                                         8'b01001001, 8'b01001011,
                                         8'b01010001, 8'b01010011,
-                                        8'b01110000, 8'b01110001, 8'b01110010, 8'b01110011, 8'b01110100, 
+                                        8'b01110000, 8'b01110001, 8'b01110010, 8'b01110011, 8'b01110100, 8'b01110110, 8'b01110111, 
                                         8'b00000001, 
                                         8'b00011000, 8'b00011010, 8'b00011011, 8'b00011110:
                                         begin

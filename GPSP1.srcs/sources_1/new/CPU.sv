@@ -219,47 +219,58 @@ module CPU(
                                 end
                                 2:
                                 begin
-                                    Read_Variable(0, 
-                                                 {Instruction[7:0], InstructionExtra}, 
-                                                 {1'b0, Instruction[15:14]},
-                                                 `ID_RAM);
+                                    if(Instruction[13]==0)
+                                    begin
+                                        Read_Variable(0, 
+                                                    {Instruction[7:0], InstructionExtra}, 
+                                                    {1'b0, Instruction[15:14]},
+                                                    `ID_RAM);
+                                    end
+                                    else
+                                    begin
+                                        Write_Variable(0,
+                                                   {Instruction[7:0], InstructionExtra},
+                                                   R[Instruction[15:14]],
+                                                   `ID_RAM);
+                                    end
                                     TempInstructionPC<=6;
                                     State<=EXEC_MICRO_INSTRUCT;
                                 end
                                 3:
                                 begin
-                                    R[Instruction[15:14]] <= RP[Instruction[13]];
+                                    if(Instruction[12]==0)
+                                        R[Instruction[15:14]] <= RP[Instruction[13]];
+                                    else
+                                        RP[Instruction[13]] <= R[Instruction[15:14]];
                                 end
                                 4:
                                 begin
-                                    Read_Variable(0, 
-                                                 {Instruction[7:0], InstructionExtra}, 
-                                                 {1'b0, Instruction[15:14]},
-                                                 `ID_RAM);
-                                    TempInstructionPC<=6;
-                                    State<=EXEC_MICRO_INSTRUCT;
+                                    if(Instruction[15]==0)
+                                        SP<={RP[1], RP[0]};
+                                    else
+                                    begin
+                                        RP[1]<=SP[15:8];
+                                        RP[0]<=SP[7:0];
+                                    end
                                 end
                                 5:
                                 begin
-                                    Write_Variable(0,
-                                                   {Instruction[7:0], InstructionExtra},
-                                                   R[Instruction[15:14]],
-                                                   `ID_RAM);
+                                    if(Instruction[13]==0)
+                                    begin
+                                        Read_Variable(0, 
+                                                    {RP[1], RP[0]}, 
+                                                    {1'b0, Instruction[15:14]},
+                                                    `ID_RAM);
+                                    end
+                                    else
+                                    begin
+                                        Write_Variable(0,
+                                                    {RP[1], RP[0]}, 
+                                                    R[Instruction[15:14]],
+                                                    `ID_RAM);
+                                    end
                                     TempInstructionPC<=6;
                                     State<=EXEC_MICRO_INSTRUCT;
-                                end
-                                6:
-                                begin
-                                    Write_Variable(0,
-                                                   {Instruction[7:0], InstructionExtra},
-                                                   R[Instruction[15:14]],
-                                                   `ID_RAM);
-                                    TempInstructionPC<=6;
-                                    State<=EXEC_MICRO_INSTRUCT;
-                                end
-                                7:
-                                begin
-                                    RP[Instruction[13]] <= R[Instruction[15:14]];
                                 end
                             endcase
                         end
@@ -275,6 +286,10 @@ module CPU(
                                     else
                                     begin
                                         {Carry,R[Instruction[15:14]]} <= R[Instruction[15:14]] - R[Instruction[13:12]];
+                                        if(R[Instruction[15:14]] - R[Instruction[13:12]] == 0)
+                                            Zero <= 1;
+                                        else
+                                            Zero <= 0;
                                     end
                                 end
                                 1:
@@ -286,6 +301,10 @@ module CPU(
                                     else
                                     begin
                                         {Carry,R[Instruction[15:14]]} <= R[Instruction[15:14]] - Instruction[7:0];
+                                        if(R[Instruction[15:14]] - Instruction[7:0] == 0)
+                                            Zero <= 1;
+                                        else
+                                            Zero <= 0;
                                     end
                                 end
                                 2:
@@ -297,17 +316,25 @@ module CPU(
                                     else
                                     begin
                                         {Carry,RP[1],RP[0]} <= {RP[1], RP[0]} - R[Instruction[15:14]];
+                                        if({RP[1], RP[0]} - R[Instruction[15:14]] == 0)
+                                            Zero <= 1;
+                                        else
+                                            Zero <= 0;
                                     end
                                 end
                                 3:
                                 begin
                                     if(Instruction[23:19] == `ADD) //RP,C
                                     begin
-                                        {Carry,RP[1],RP[0]} <= {RP[1], RP[0]} + Instruction[15:8];
+                                        {Carry,RP[1],RP[0]} <= {RP[1], RP[0]} + Instruction[15:0];
                                     end
                                     else
                                     begin
-                                        {Carry,RP[1],RP[0]} <= {RP[1], RP[0]} - Instruction[15:8];
+                                        {Carry,RP[1],RP[0]} <= {RP[1], RP[0]} - Instruction[15:0];
+                                        if({RP[1], RP[0]} - Instruction[15:0] == 0)
+                                            Zero <= 1;
+                                        else
+                                            Zero <= 0;
                                     end
                                 end
                                 default:
@@ -341,9 +368,21 @@ module CPU(
                         end
                         `CMP: //DONE
                         begin
-                            CMPA <= (R[Instruction[15:13]] > R[Instruction[12:11]]);
-                            CMPB <= (R[Instruction[15:13]] < R[Instruction[12:11]]);
-                            CMPE <= (R[Instruction[15:13]] == R[Instruction[12:11]]);
+                            case(Instruction[18:16])
+                                0:
+                                begin
+                                    CMPA <= (R[Instruction[15:13]] > R[Instruction[12:11]]);
+                                    CMPB <= (R[Instruction[15:13]] < R[Instruction[12:11]]);
+                                    CMPE <= (R[Instruction[15:13]] == R[Instruction[12:11]]);
+                                end
+                                1:
+                                begin
+                                    CMPA <= ({RP[1],RP[0]} > SP);
+                                    CMPB <= ({RP[1],RP[0]} < SP);
+                                    CMPE <= ({RP[1],RP[0]} == SP);
+                                end
+                            endcase
+                          
                         end
                         `JMP: //TBA
                         begin
@@ -531,7 +570,8 @@ module CPU(
                                     case(Data[7:3])
                                         5'b01000, 5'b01001, 5'b01010, 5'b01101, 5'b01110, 5'b00011:
                                         begin
-                                            if(Data==8'b01110101)
+                                            if(Data==8'b01110101 || //RET
+                                               Data==8'b01101001)   //CMP SP, RP
                                             begin
                                                 State<=EXEC_INSTRUCT;
                                                 InstructionReady<=1;
@@ -566,9 +606,12 @@ module CPU(
                                     InstructionByte<=InstructionByte+1;
                                     Instruction[15:8]<=Data;
                                     case(Instruction[23:16])
-                                        8'b01000001, 8'b01000010, 8'b01000100, 8'b01000101, 8'b01000110, 8'b01001001,
-                                        8'b01010001, 8'b01110000, 8'b01110001, 8'b01110010, 8'b01110011, 8'b01110100, 
-                                        8'b00000001, 8'b00011000, 8'b00011010, 8'b00011011, 8'b00011110:
+                                        8'b01000001, 8'b01000010, 
+                                        8'b01001001, 8'b01001011,
+                                        8'b01010001, 8'b01010011,
+                                        8'b01110000, 8'b01110001, 8'b01110010, 8'b01110011, 8'b01110100, 
+                                        8'b00000001, 
+                                        8'b00011000, 8'b00011010, 8'b00011011, 8'b00011110:
                                         begin
                                             Read_Instruction(0, PC+1, `ID_RAM);
                                             TempInstructionPC<=6;
@@ -587,7 +630,7 @@ module CPU(
                                     InstructionByte<=InstructionByte+1;
                                     Instruction[7:0]<=Data;
                                     case (Instruction[23:16])
-                                        8'b01000110, 8'b01000101, 8'b01000010, 8'b01000100, 8'b00011110:
+                                        8'b01000010, 8'b00011110:
                                         begin
                                             Read_Instruction(0, PC+1, `ID_RAM);
                                             TempInstructionPC<=6;
